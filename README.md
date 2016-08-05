@@ -20,10 +20,10 @@ Usage
       -V, --version                output the version number
       -c, --content <FILE|URL>     path or URL to document
       -s, --selector <SELECTOR>    selector to element
-      -z, --zoom <ZOOM>            zoom scale
+      -w, --width <WIDTH>          render width
       -v  --viewport <DIMENSIONS>  viewport width and height
       -d, --directory <DIR>        output directory
-      -o, --output <NAME>          output filename
+      -f, --filename <NAME>        output filename
 
 #### Examples
 

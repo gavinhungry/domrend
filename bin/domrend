@@ -25,10 +25,10 @@
     .version(pjson.version)
     .option('-c, --content <FILE|URL>', 'path or URL to document')
     .option('-s, --selector <SELECTOR>', 'selector to element')
-    .option('-z, --zoom <ZOOM>', 'zoom scale')
+    .option('-w, --width <WIDTH>', 'render width')
     .option('-v  --viewport <DIMENSIONS>', 'viewport width and height')
     .option('-d, --directory <DIR>', 'output directory')
-    .option('-o, --output <NAME>', 'output filename');
+    .option('-f, --filename <NAME>', 'output filename');
 
   if (process.argv.length <= 2) {
     app.help();
@@ -46,14 +46,12 @@
   domrend.renderToFile({
     content: validUrl.isWebUri(app.content) ? app.content : readFile(app.content),
     selector: app.selector || null,
-    zoom: Number(app.zoom) || null,
+    width: Number(app.width) || null,
     viewport: viewport,
-    directory: app.directory || null,
-    output: app.output || null
-  }).then(function(imgs) {
-    imgs.forEach(function(img) {
-      console.log(img.file);
-    });
+    dir: app.directory || null,
+    filename: app.filename || null
+  }).then(function(filePath) {
+    console.log(filePath);
   }, function(err) {
     console.error(err);
     process.exit(1);

@@ -18,7 +18,7 @@
    *
    * @param {String} opts.content - page markup or URL
    * @param {String} [opts.selector] - selector to element
-   * @param {Number|Array} [opts.zoom] - zoom scales(s)
+   * @param {Number} [opts.width] - render width
    * @param {Object} [opts.viewport] - viewport width and height
    *
    * @return {Promise}
@@ -30,49 +30,37 @@
     }
 
     var selector = opts.selector || 'body';
-    var zooms = Array.isArray(opts.zoom) ? opts.zoom : [opts.zoom];
+    var width = Number(opts.width) || 0;
+
     var viewport = opts.viewport || {};
     viewport.width = Number(viewport.width) || 1280;
     viewport.height = Number(viewport.height) || 800;
 
-    var promises = zooms.map(function(zoom) {
-      zoom = Number(zoom) || 1;
+    return new Promise(function(res, rej) {
+      var program = phantomjs.exec(scriptPath,
+        opts.content, selector, width, viewport.width, viewport.height);
 
-      return new Promise(function(res, rej) {
-        var program = phantomjs.exec(scriptPath,
-          opts.content, selector, zoom, viewport.width, viewport.height);
+      var data = '';
+      program.stdout.on('data', function(chunk) {
+        data += chunk;
+      });
 
-        var data = '';
-        program.stdout.on('data', function(chunk) {
-          data += chunk;
-        });
+      program.on('exit', function(code) {
+        if (code === 1) {
+          return rej(new Error('Could not load content'));
+        }
 
-        program.on('exit', function(code) {
-          if (code === 1) {
-            return rej(new Error('Could not load content'));
-          }
+        if (code === 2) {
+          return rej(new Error('Element not found'));
+        }
 
-          if (code === 2) {
-            return rej(new Error('Element not found'));
-          }
+        if (code === 3) {
+          return rej(new Error('Render failed'));
+        }
 
-          if (code === 3) {
-            return rej(new Error('Render failed'));
-          }
-
-          var img = JSON.parse(data);
-
-          res({
-            zoom: zoom,
-            width: img.width,
-            height: img.height,
-            data: img.base64
-          });
-        });
+        res(data);
       });
     });
-
-    return Promise.all(promises);
   };
 
   /**
@@ -81,37 +69,27 @@
    * @param {Object} opts
    * @param {String} opts.content - page markup or URL
    * @param {String} [opts.selector] - selector to element
-   * @param {Number|Array} [opts.zoom] - zoom scales(s)
+   * @param {Number} [opts.width] - render width
    * @param {Object} [opts.viewport] - viewport width and height
-   * @param {Array} [opts.dir] - relative output dir
-   * @param {String} [opts.output] - output filename, defaults to 'img'
+   * @param {Array} [opts.dir] - relative output directory
+   * @param {String} [opts.filename] - output filename, defaults to 'domrend.png'
    *
    * @return {Promise}
    */
   domrend.renderToFile = function(opts) {
-    var outputPath = path.resolve(opts.dir || '');
-    var output = opts.output ? opts.output.replace(/\.png$/i, '') : 'img';
+    return domrend.render(opts).then(function(data) {
+      return new Promise(function(res, rej) {
+        var dirPath = path.resolve(opts.dir || '');
+        var filePath = path.join(dirPath, opts.filename || 'domrend.png');
 
-    return domrend.render(opts).then(function(imgs) {
-      return imgs.map(function(img) {
-        return new Promise(function(res, rej) {
-          var filename = output + (imgs.length > 1 ? '-' + img.width : '') + '.png';
-          var file = path.join(outputPath, filename);
+        fs.writeFile(filePath, data, 'base64', function(err) {
+          if (err) {
+            return rej(err);
+          }
 
-          fs.writeFile(file, img.data, 'base64', function(err) {
-            if (err) {
-              return rej(err);
-            }
-
-            res({
-              width: img.width,
-              file: file
-            });
-          });
+          res(filePath);
         });
       });
-    }).then(function(promises) {
-      return Promise.all(promises);
     });
   };
 
