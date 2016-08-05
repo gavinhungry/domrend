@@ -1,0 +1,30 @@
+{
+  "name": "domrend",
+  "version": "0.5.0",
+  "author": "Gavin Lloyd <gavinhungry@gmail.com>",
+  "description": "Render DOM elements to PNG",
+  "license": "MIT",
+
+  "keywords": [
+    "dom",
+    "render",
+    "png"
+  ],
+
+  "homepage": "https://github.com/gavinhungry/domrend",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/gavinhungry/domrend.git"
+  },
+
+  "main": "domrend.js",
+  "bin": {
+    "domrend": "bin/domrend"
+  },
+
+  "dependencies": {
+    "commander": "2.9.x",
+    "phantomjs-prebuilt": "2.1.x",
+    "valid-url": "1.0.x"
+  }
+}

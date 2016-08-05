@@ -1,0 +1,62 @@
+#!/usr/bin/env node
+
+/**
+ * domrend - Render DOM elements to PNG
+ * https://github.com/gavinhungry/domrend
+ */
+
+(function() {
+  'use strict';
+
+  var fs = require('fs');
+  var pjson = require('../package.json');
+  var domrend = require('../domrend.js');
+  var validUrl = require('valid-url');
+
+  var readFile = function(file) {
+    try {
+      return fs.readFileSync(file);
+    } catch(err) {
+      return null;
+    }
+  };
+
+  var app = require('commander')
+    .version(pjson.version)
+    .option('-c, --content <FILE|URL>', 'path or URL to document')
+    .option('-s, --selector <SELECTOR>', 'selector to element')
+    .option('-z, --zoom <ZOOM>', 'zoom scale')
+    .option('-v  --viewport <DIMENSIONS>', 'viewport width and height')
+    .option('-d, --directory <DIR>', 'output directory')
+    .option('-o, --output <NAME>', 'output filename');
+
+  if (process.argv.length <= 2) {
+    app.help();
+  }
+
+  app.parse(process.argv);
+
+  var viewport = {};
+  var dims = (app.viewport || '').split('x').filter(Number).map(Number);
+  if (dims.length >= 2) {
+    viewport.width = dims[0];
+    viewport.height = dims[1];
+  }
+
+  domrend.renderToFile({
+    content: validUrl.isWebUri(app.content) ? app.content : readFile(app.content),
+    selector: app.selector || null,
+    zoom: Number(app.zoom) || null,
+    viewport: viewport,
+    directory: app.directory || null,
+    output: app.output || null
+  }).then(function(imgs) {
+    imgs.forEach(function(img) {
+      console.log(img.file);
+    });
+  }, function(err) {
+    console.error(err);
+    process.exit(1);
+  });
+
+})();
