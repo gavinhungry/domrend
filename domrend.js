@@ -83,13 +83,13 @@
    * @param {String} [opts.selector] - selector to element
    * @param {Number|Array} [opts.zoom] - zoom scales(s)
    * @param {Object} [opts.viewport] - viewport width and height
-   * @param {Array} [opts.directory] - relative output directory
+   * @param {Array} [opts.dir] - relative output dir
    * @param {String} [opts.output] - output filename, defaults to 'img'
    *
    * @return {Promise}
    */
   domrend.renderToFile = function(opts) {
-    var outputPath = path.resolve(opts.directory || '');
+    var outputPath = path.resolve(opts.dir || '');
     var output = opts.output ? opts.output.replace(/\.png$/i, '') : 'img';
 
     return domrend.render(opts).then(function(imgs) {

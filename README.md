@@ -72,8 +72,8 @@ domrend.renderToFile({
   zoom: [1.5, 2],
 
   // options specific to renderToFile
-  output: '/path/to/output/dir',
-  name: 'foo' // filename, default is 'img'
+  dir: '/path/to/output/dir',
+  output: 'foo' // filename, default is 'img'
 }).then(function(imgs) {
   /*
   [{
