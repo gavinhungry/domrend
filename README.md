@@ -1,6 +1,6 @@
 domrend
 =======
-Render a DOM element to PNG.
+Render DOM elements to PNG.
 
 Installation
 ------------
