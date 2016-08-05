@@ -1,6 +1,6 @@
 {
   "name": "domrend",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "author": "Gavin Lloyd <gavinhungry@gmail.com>",
   "description": "Render DOM elements to PNG",
   "license": "MIT",
