@@ -28,11 +28,11 @@ Usage
 #### Examples
 
 ```shell
-$ domrend -c page.html -s '#logo' -v 640x480
+$ domrend -c logo.html -s '#logo' -w 512
 ```
 
 ```shell
-$ domrend -c https://www.w3.org -s '#w3c_most-recently' -z 0.5
+$ domrend -c https://www.w3.org -s '#w3c_most-recently'
 ```
 
 ### Module
@@ -49,15 +49,9 @@ The only required option is `content`.
 domrend.render({
   content: fs.readFileSync('page.html'), // can also be a URL
   selector: '#logo', // element to select, defaults to body
-  zoom: 1.5 // zoom factor(s), eg. [1.5, 2]
-}).then(function(imgs) {
-  /*
-  [{
-    width: 64,
-    height: 64,
-    data: // base-64 encoded PNG
-  }, ...]
-  */
+  width: 192 // requested render width, may not work with responsive design
+}).then(function(data) {
+  // 'iVBORw0KGgoAAAANSUhEUgAAA...'
 }, function(err) {
   // an error occurred
 });
@@ -69,19 +63,16 @@ domrend.render({
 domrend.renderToFile({
   content: 'http://example.com/page.html',
   selector: '#logo',
-  zoom: [1.5, 2],
+  viewport: {
+    width: 1024,
+    height: 800
+  },
 
   // options specific to renderToFile
   dir: '/path/to/output/dir',
-  output: 'foo' // filename, default is 'img'
-}).then(function(imgs) {
-  /*
-  [{
-    width: 128,
-    height: 64,
-    file: '/path/to/output/dir/foo-128.png'
-  }, ...]
-  */
+  output: 'foo.png' // output filename, default is 'domrend.png'
+}).then(function(filePath) {
+  // '/path/to/output/dir/foo.png'
 }, function(err) {
   // an error occurred
 });
