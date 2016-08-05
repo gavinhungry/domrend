@@ -49,15 +49,25 @@
 
         program.on('exit', function(code) {
           if (code === 1) {
-            return rej(new Error('Element not found'));
-          }
-
-          if (code === 2) {
             return rej(new Error('Could not load content'));
           }
 
+          if (code === 2) {
+            return rej(new Error('Element not found'));
+          }
+
+          if (code === 3) {
+            return rej(new Error('Render failed'));
+          }
+
           var img = JSON.parse(data);
-          res(img);
+
+          res({
+            zoom: zoom,
+            width: img.width,
+            height: img.height,
+            data: img.base64
+          });
         });
       });
     });
